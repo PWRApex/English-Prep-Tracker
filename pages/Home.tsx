@@ -33,7 +33,7 @@ export const Home: React.FC = () => {
         <img 
           src={user?.profile_photo_url} 
           alt="Profile" 
-          className="w-14 h-14 rounded-full border-2 border-white dark:border-gray-700 shadow-md object-cover"
+          className="w-20 h-20 rounded-full border-2 border-white dark:border-gray-700 shadow-md object-cover"
         />
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Hello, {user?.first_name}!</h1>

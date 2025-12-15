@@ -6,6 +6,7 @@ export interface User {
   gender: 'Male' | 'Female' | 'Other';
   english_level: string;
   profile_photo_url?: string;
+  banner_url?: string;
   
   // Fixed Academic Info
   faculty: string;

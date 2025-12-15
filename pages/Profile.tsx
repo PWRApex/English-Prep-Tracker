@@ -1,19 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { LogOut, Edit2, Save, X, Moon, Sun, Camera, School, User as UserIcon, Calendar, Upload } from 'lucide-react';
+import { LogOut, Edit2, Save, X, Moon, Sun, Camera, School, User as UserIcon, Calendar, Upload, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 export const Profile: React.FC = () => {
   const { user, exams, attendance, assignments, logout, updateUser, isDarkMode, toggleDarkMode } = useApp();
   const [isEditing, setIsEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
   
   // Local state for editable fields
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [profilePhoto, setProfilePhoto] = useState('');
+  const [bannerUrl, setBannerUrl] = useState('');
   
   // Academic & Registration State
   const [faculty, setFaculty] = useState('');
@@ -31,6 +33,7 @@ export const Profile: React.FC = () => {
       setLastName(user.last_name || '');
       setGender(user.gender || 'Male');
       setProfilePhoto(user.profile_photo_url || '');
+      setBannerUrl(user.banner_url || '');
       setFaculty(user.faculty || '');
       setDepartment(user.department || '');
       setClassLevel(user.class_level || '');
@@ -75,6 +78,7 @@ export const Profile: React.FC = () => {
             last_name: lastName,
             gender: gender,
             profile_photo_url: profilePhoto,
+            banner_url: bannerUrl,
             faculty: faculty,
             department: department,
             class_level: classLevel,
@@ -93,6 +97,7 @@ export const Profile: React.FC = () => {
         setLastName(user.last_name || '');
         setGender(user.gender || 'Male');
         setProfilePhoto(user.profile_photo_url || '');
+        setBannerUrl(user.banner_url || '');
         setFaculty(user.faculty || '');
         setDepartment(user.department || '');
         setClassLevel(user.class_level || '');
@@ -108,12 +113,27 @@ export const Profile: React.FC = () => {
     fileInputRef.current?.click();
   };
 
+  const triggerBannerInput = () => {
+    bannerInputRef.current?.click();
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -137,14 +157,40 @@ export const Profile: React.FC = () => {
 
       {/* 1. Identity Card */}
       <div className="bg-white dark:bg-darkcard rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden relative">
-         <div className="h-24 bg-gradient-to-r from-primary to-indigo-400"></div>
+         {/* Banner Image Area */}
+         <div className="h-32 w-full relative group bg-gray-100 dark:bg-gray-800">
+            {bannerUrl ? (
+                <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+            ) : (
+                <div className="w-full h-full bg-gradient-to-r from-primary to-indigo-400"></div>
+            )}
+            
+            {isEditing && (
+                <>
+                    <input 
+                        type="file" 
+                        ref={bannerInputRef} 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleBannerChange}
+                    />
+                    <button 
+                        onClick={triggerBannerInput} 
+                        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-colors shadow-sm"
+                    >
+                        <ImageIcon size={18} />
+                    </button>
+                </>
+            )}
+         </div>
+
          <div className="px-6 pb-6">
             <div className="relative -mt-12 mb-4 flex justify-between items-end">
                 <div className="relative group">
                     <img 
                         src={profilePhoto || "https://via.placeholder.com/150"} 
                         alt="Profile" 
-                        className="w-24 h-24 rounded-full border-4 border-white dark:border-darkcard object-cover bg-gray-200" 
+                        className="w-24 h-24 rounded-full border-4 border-white dark:border-darkcard object-cover bg-gray-200 shadow-md" 
                     />
                     {isEditing && (
                         <>
